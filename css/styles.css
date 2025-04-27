@@ -1,0 +1,148 @@
+body {
+    background-color: #f5f3ef;
+    font-family: 'Poppins', sans-serif;
+    color: #333;
+}
+
+.container {
+    max-width: 400px; /* Reduzido 45% de 700px */
+    margin: auto;
+    padding: 15px;
+}
+
+h1 {
+    font-size: 2.2rem;
+    color: #4a4a4a;
+    font-weight: 600;
+}
+
+.lead {
+    font-size: 1rem;
+    color: #6c757d;
+}
+
+.card {
+    border: none;
+    border-radius: 10px;
+    background-color: #fff;
+    margin-bottom: 15px;
+}
+
+.card-title {
+    font-size: 1.4rem;
+    color: #4a4a4a;
+    margin-bottom: 15px;
+}
+
+.form-control, .form-select {
+    border-radius: 8px;
+    border: 1px solid #ced4da;
+    padding: 8px;
+    font-size: 0.95rem;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #6c63ff;
+    box-shadow: 0 0 5px rgba(108, 99, 255, 0.3);
+}
+
+.btn-primary {
+    background-color: #6c63ff;
+    border: none;
+    border-radius: 8px;
+    padding: 10px;
+    font-size: 0.95rem;
+    transition: background-color 0.3s;
+}
+
+.btn-primary:hover {
+    background-color: #5a54d6;
+}
+
+.btn-success {
+    background-color: #28a745;
+    border: none;
+    border-radius: 8px;
+    padding: 10px;
+    font-size: 0.95rem;
+    transition: background-color 0.3s;
+}
+
+.btn-success:hover {
+    background-color: #218838;
+}
+
+.btn-warning, .btn-danger, .btn-secondary {
+    border-radius: 8px;
+    padding: 6px 10px;
+    font-size: 0.85rem;
+}
+
+.list-group-item {
+    border: none;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+    margin-bottom: 8px;
+    padding: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.9rem;
+}
+
+.list-group-item input {
+    width: 80px;
+    border-radius: 5px;
+    border: 1px solid #ced4da;
+    padding: 4px;
+    font-size: 0.9rem;
+}
+
+.form-check {
+    margin-bottom: 8px;
+}
+
+.form-check-label {
+    margin-left: 8px;
+    font-size: 0.9rem;
+}
+
+#mensagemErro {
+    border-radius: 8px;
+    font-size: 0.9rem;
+    margin-bottom: 15px;
+}
+
+#totais {
+    font-weight: 500;
+    color: #4a4a4a;
+    font-size: 0.9rem;
+}
+
+@media (max-width: 576px) {
+    .container {
+        padding: 10px;
+    }
+
+    h1 {
+        font-size: 1.8rem;
+    }
+
+    .card-title {
+        font-size: 1.2rem;
+    }
+
+    .list-group-item {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 10px;
+    }
+
+    .list-group-item div {
+        margin-top: 8px;
+    }
+
+    .btn-sm {
+        margin-top: 5px;
+    }
+}
