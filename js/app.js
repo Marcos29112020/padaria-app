@@ -67,21 +67,30 @@ function excluirIngrediente(id) {
 }
 
 // Função para carregar ingredientes
-function carregarIngredientes() {
+function carregarIngredientes(filtro = '') {
     const lista = document.getElementById('listaIngredientes');
     lista.innerHTML = '';
-    ingredientes.forEach(ingrediente => {
-        const li = document.createElement('li');
-        li.className = 'list-group-item';
-        li.innerHTML = `
-            <div>
-                ${ingrediente.nome} (${ingrediente.unidade}): R$ 
-                <input type="number" value="${ingrediente.preco.toFixed(2)}" step="0.01" min="0" onchange="atualizarPrecoIngrediente('${ingrediente.id}', this.value)">
-                <button class="btn btn-danger btn-sm" onclick="excluirIngrediente('${ingrediente.id}')">Excluir</button>
-            </div>
-        `;
-        lista.appendChild(li);
-    });
+    const ingredientesFiltrados = ingredientes.filter(ingrediente =>
+        ingrediente.nome.toLowerCase().includes(filtro.toLowerCase())
+    );
+
+    if (filtro && ingredientesFiltrados.length > 0) {
+        lista.classList.remove('hidden');
+        ingredientesFiltrados.forEach(ingrediente => {
+            const li = document.createElement('li');
+            li.className = 'list-group-item';
+            li.innerHTML = `
+                <div>
+                    ${ingrediente.nome} (${ingrediente.unidade}): R$ 
+                    <input type="number" value="${ingrediente.preco.toFixed(2)}" step="0.01" min="0" onchange="atualizarPrecoIngrediente('${ingrediente.id}', this.value)">
+                    <button class="btn btn-danger btn-sm" onclick="excluirIngrediente('${ingrediente.id}')">Excluir</button>
+                </div>
+            `;
+            lista.appendChild(li);
+        });
+    } else {
+        lista.classList.add('hidden');
+    }
     carregarIngredientesParaProduto();
 }
 
@@ -97,7 +106,7 @@ function atualizarPrecoIngrediente(id, preco) {
     if (ingrediente) {
         ingrediente.preco = novoPreco;
         localStorage.setItem('ingredientes', JSON.stringify(ingredientes));
-        carregarIngredientes();
+        carregarIngredientes(document.getElementById('pesquisaIngrediente').value);
         carregarProdutos();
     }
 }
@@ -200,6 +209,7 @@ function excluirProduto(id) {
         produtos = produtos.filter(p => p.id !== id);
         localStorage.setItem('produtos', JSON.stringify(produtos));
         carregarProdutos();
+        document.getElementById('detalhesReceita').innerHTML = ''; // Limpar detalhes
     }
 }
 
@@ -214,52 +224,108 @@ function cancelarEdicao() {
     carregarIngredientesParaProduto();
 }
 
+// Função para exibir detalhes de uma receita
+function exibirReceita(id) {
+    const produto = produtos.find(p => p.id === id);
+    if (!produto) return;
+
+    const ingredientesProduto = produto.ingredientes.map(ing => {
+        const ingrediente = ingredientes.find(i => i.id === ing.id);
+        const custo = ingrediente ? (ingrediente.preco * ing.quantidade) : 0;
+        return { ...ingrediente, quantidade: ing.quantidade, custo };
+    });
+    const custoIngredientes = ingredientesProduto.reduce((sum, ing) => sum + (ing.custo || 0), 0);
+    const custoHoras = produto.horas * horaTrabalhada;
+    const custoTotal = custoIngredientes + custoHoras;
+    const precoSugerido = custoTotal * 2 * 1.1;
+
+    const detalhesDiv = document.getElementById('detalhesReceita');
+    detalhesDiv.innerHTML = `
+        <h5>${produto.nome}</h5>
+        <p>Ingredientes: ${ingredientesProduto.map(ing => `${ing.nome || 'Desconhecido'} (${ing.quantidade}${ing.unidade || ''} = R$${ing.custo.toFixed(2)})`).join(', ')}</p>
+        <p>Horas Trabalhadas: ${produto.horas} (R$${custoHoras.toFixed(2)})</p>
+        <p>Custo Total: R$${custoTotal.toFixed(2)}</p>
+        <p>Preço Sugerido: R$${precoSugerido.toFixed(2)}</p>
+        <div>
+            <button class="btn btn-warning btn-sm" onclick="editarProduto('${produto.id}')">Editar</button>
+            <button class="btn btn-danger btn-sm" onclick="excluirProduto('${produto.id}')">Excluir</button>
+        </div>
+    `;
+}
+
 // Função para carregar receitas e calcular totais
-function carregarProdutos() {
+function carregarProdutos(filtro = '') {
     const lista = document.getElementById('listaProdutos');
     lista.innerHTML = '';
     let custoTotalTodos = 0;
     let precoSugeridoTodos = 0;
 
-    produtos.forEach(produto => {
-        const ingredientesProduto = produto.ingredientes.map(ing => {
-            const ingrediente = ingredientes.find(i => i.id === ing.id);
-            const custo = ingrediente ? (ingrediente.preco * ing.quantidade) : 0;
-            return { ...ingrediente, quantidade: ing.quantidade, custo };
-        });
-        const custoIngredientes = ingredientesProduto.reduce((sum, ing) => sum + (ing.custo || 0), 0);
-        const custoHoras = produto.horas * horaTrabalhada;
-        const custoTotal = custoIngredientes + custoHoras;
-        const precoSugerido = custoTotal * 2 * 1.1; // 100% lucro + 10% custos incalculáveis
+    const produtosFiltrados = produtos.filter(produto =>
+        produto.nome.toLowerCase().includes(filtro.toLowerCase())
+    );
 
-        custoTotalTodos += custoTotal;
-        precoSugeridoTodos += precoSugerido;
+    if (filtro && produtosFiltrados.length > 0) {
+        lista.classList.remove('hidden');
+        produtosFiltrados.forEach(produto => {
+            const ingredientesProduto = produto.ingredientes.map(ing => {
+                const ingrediente = ingredientes.find(i => i.id === ing.id);
+                const custo = ingrediente ? (ingrediente.preco * ing.quantidade) : 0;
+                return { ...ingrediente, quantidade: ing.quantidade, custo };
+            });
+            const custoIngredientes = ingredientesProduto.reduce((sum, ing) => sum + (ing.custo || 0), 0);
+            const custoHoras = produto.horas * horaTrabalhada;
+            const custoTotal = custoIngredientes + custoHoras;
+            const precoSugerido = custoTotal * 2 * 1.1;
 
-        const li = document.createElement('li');
-        li.className = 'list-group-item';
-        li.innerHTML = `
-            <div>
-                <strong>${produto.nome}</strong><br>
-                Ingredientes: ${ingredientesProduto.map(ing => `${ing.nome || 'Desconhecido'} (${ing.quantidade}${ing.unidade || ''} = R$${ing.custo.toFixed(2)})`).join(', ')}<br>
-                Horas Trabalhadas: ${produto.horas} (R$${custoHoras.toFixed(2)})<br>
-                Custo Total: R$${custoTotal.toFixed(2)}<br>
-                Preço Sugerido: R$${precoSugerido.toFixed(2)}
+            custoTotalTodos += custoTotal;
+            precoSugeridoTodos += precoSugerido;
+
+            const li = document.createElement('li');
+            li.className = 'list-group-item';
+            li.innerHTML = `
                 <div>
-                    <button class="btn btn-warning btn-sm" onclick="editarProduto('${produto.id}')">Editar</button>
-                    <button class="btn btn-danger btn-sm" onclick="excluirProduto('${produto.id}')">Excluir</button>
+                    <strong>${produto.nome}</strong>
+                    <div>
+                        <button class="btn btn-primary btn-sm" onclick="exibirReceita('${produto.id}')">Ver Detalhes</button>
+                        <button class="btn btn-warning btn-sm" onclick="editarProduto('${produto.id}')">Editar</button>
+                        <button class="btn btn-danger btn-sm" onclick="excluirProduto('${produto.id}')">Excluir</button>
+                    </div>
                 </div>
-            </div>
-        `;
-        lista.appendChild(li);
-    });
+            `;
+            lista.appendChild(li);
+        });
+    } else {
+        lista.classList.add('hidden');
+    }
 
     // Exibir totais
     const totaisDiv = document.getElementById('totais');
-    totaisDiv.innerHTML = produtos.length > 0 ? `
+    totaisDiv.innerHTML = produtosFiltrados.length > 0 && filtro ? `
         <p>Custo Total de Todas as Receitas: R$${custoTotalTodos.toFixed(2)}</p>
         <p>Preço Sugerido Total: R$${precoSugeridoTodos.toFixed(2)}</p>
-    ` : '<p>Nenhuma receita cadastrada.</p>';
+    ` : '<p>Nenhuma receita cadastrada ou encontrada.</p>';
 }
+
+// Função para limpar pesquisa de ingredientes
+function limparPesquisaIngrediente() {
+    document.getElementById('pesquisaIngrediente').value = '';
+    carregarIngredientes();
+}
+
+// Função para limpar pesquisa de receitas
+function limparPesquisaReceita() {
+    document.getElementById('pesquisaReceita').value = '';
+    carregarProdutos();
+}
+
+// Eventos de pesquisa
+document.getElementById('pesquisaIngrediente').addEventListener('input', (e) => {
+    carregarIngredientes(e.target.value);
+});
+
+document.getElementById('pesquisaReceita').addEventListener('input', (e) => {
+    carregarProdutos(e.target.value);
+});
 
 // Inicializar
 carregarIngredientes();

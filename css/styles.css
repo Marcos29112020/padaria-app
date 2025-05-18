@@ -5,7 +5,7 @@ body {
 }
 
 .container {
-    max-width: 400px; /* Reduzido 45% de 700px */
+    max-width: 400px;
     margin: auto;
     padding: 15px;
 }
@@ -88,6 +88,12 @@ h1 {
     justify-content: space-between;
     align-items: center;
     font-size: 0.9rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.list-group-item:hover {
+    background-color: #e9ecef;
 }
 
 .list-group-item input {
@@ -117,6 +123,27 @@ h1 {
     font-weight: 500;
     color: #4a4a4a;
     font-size: 0.9rem;
+}
+
+#detalhesReceita {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 15px;
+    font-size: 0.9rem;
+}
+
+#detalhesReceita:empty {
+    display: none;
+}
+
+/* Nova classe para ocultar elementos */
+.hidden {
+    display: none;
+}
+
+/* Estilizar input-group */
+.input-group .btn-secondary {
+    border-radius: 8px;
 }
 
 @media (max-width: 576px) {

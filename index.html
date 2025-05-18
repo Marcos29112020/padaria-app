@@ -57,7 +57,13 @@
         <div class="card mb-4 shadow-sm">
             <div class="card-body">
                 <h2 class="card-title">Ingredientes Cadastrados</h2>
-                <ul id="listaIngredientes" class="list-group"></ul>
+                <div class="mb-3">
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="pesquisaIngrediente" placeholder="Pesquisar ingredientes...">
+                        <button class="btn btn-secondary" onclick="limparPesquisaIngrediente()">Limpar</button>
+                    </div>
+                </div>
+                <ul id="listaIngredientes" class="list-group hidden"></ul>
             </div>
         </div>
 
@@ -84,7 +90,14 @@
         <div class="card shadow-sm">
             <div class="card-body">
                 <h2 class="card-title">Receitas Cadastradas</h2>
-                <ul id="listaProdutos" class="list-group"></ul>
+                <div class="mb-3">
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="pesquisaReceita" placeholder="Pesquisar receitas...">
+                        <button class="btn btn-secondary" onclick="limparPesquisaReceita()">Limpar</button>
+                    </div>
+                </div>
+                <ul id="listaProdutos" class="list-group hidden"></ul>
+                <div id="detalhesReceita" class="mt-3"></div>
                 <div id="totais" class="mt-3"></div>
             </div>
         </div>
